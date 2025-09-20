@@ -1,0 +1,39 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Optional build output
+/dist
+/build
+
+# IDE files
+.vscode/
+.idea/
+
+# Misc
+*.swp
+*.swo
+
+# Coverage
+coverage/
+
+# Others
+*.tgz
+
+# Ignore backend specific files
+backend/node_modules/
+backend/.env
+backend/logs/
