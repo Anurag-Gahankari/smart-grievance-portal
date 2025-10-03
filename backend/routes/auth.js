@@ -2,6 +2,7 @@ import express from "express"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
+import { sendResponse } from "../utils/response.js"
 
 const router = express.Router();
 
@@ -13,9 +14,9 @@ router.post("/register", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const user = await User.create({name, email, password : hashedPassword, role});
-        res.status(201).json({message : "User registered", userId : user._id});
+        sendResponse(res, true, "User registered", { userId: user._id }, null, 201);
     }catch(error){
-        res.status(505).json({error : error.message});
+        sendResponse(res, false, "Registration failed", null, error.message, 500);
     }
 });
 
@@ -26,18 +27,18 @@ router.post("/login", async (req, res) => {
         const {email, password} = req.body;
         const user = await User.findOne({email});
 
-        if(!user) return res.status(401).json({error : "Invalid Credentials"});
+        if(!user) return sendResponse(res, false, "Invalid Credentials", null, "Invalid Credentials", 401);
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch) return res.status(401).json({error: "Invalid Password"});
+        if(!isMatch) return sendResponse(res, false, "Invalid Password", null, "Invalid Password", 401);
 
         const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET, { 
             expiresIn: "1hr",
         });
 
-        res.json({token, role: user.role});
+        sendResponse(res, true, "Login successful", { token, role: user.role });
     }catch(error){
-        res.status(500).json({error: error.message});
+        sendResponse(res, false, "Login failed", null, error.message, 500);
     }
 });
 

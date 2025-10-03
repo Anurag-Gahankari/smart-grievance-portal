@@ -2,6 +2,7 @@ import express from "express"
 import complaint from "../models/complaint.js"
 import {authMiddleware, authorizeRoles} from "../middleware/auth.js"
 import Complaint from "../models/complaint.js";
+import { sendResponse } from "../utils/response.js"
 
 const router = express.Router();
 
@@ -17,9 +18,9 @@ router.post("/", authMiddleware, authorizeRoles("citizen"), async(req,res) =>{
             category,
             citizen: req.user.id,
         });
-        res.status(201).json({message : "Complaint Created", complaint});
+        sendResponse(res, true, "Complaint Created", { complaint }, null, 201);
     }catch(err){
-        res.status(500).json({error : error.message})
+        sendResponse(res, false, "Complaint creation failed", null, err.message, 500);
     }
 });
 
@@ -34,9 +35,9 @@ router.get("/", authMiddleware, async (req,res) =>{
             complaints = await Complaint.find({citizen : req.user.id});
         }
 
-        res.json(complaints);
+        sendResponse(res, true, "Complaints fetched", { complaints });
     }catch(error){
-        res.status(500).json({error : error.message});
+        sendResponse(res, false, "Failed to fetch complaints", null, error.message, 500);
     }
 });
 
@@ -53,11 +54,11 @@ router.patch("/:id", authMiddleware, authorizeRoles("admin"), async (req,res) =>
         );
 
         if(!updatedComplaint){
-            return res.status(404).json({error : "Complaint Not Found"});
+            return sendResponse(res, false, "Complaint Not Found", null, "Complaint Not Found", 404);
         }
-        res.json({message : "Complaint Updated", updatedComplaint});
+        sendResponse(res, true, "Complaint Updated", { updatedComplaint });
     }catch(error){
-        res.status(500).json({ error: error.message });
+        sendResponse(res, false, "Failed to update complaint", null, error.message, 500);
     }
 });
 
