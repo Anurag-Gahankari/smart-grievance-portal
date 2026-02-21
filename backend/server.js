@@ -2,9 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import authRoutes from "../backend/routes/auth.js"
-import complaintRoutes from "../backend/routes/complaints.js"
-import { sendResponse } from "../backend/utils/response.js"
+import authRoutes from "./routes/auth.js"
+import complaintRoutes from "./routes/complaints.js"
+import { sendResponse } from "./utils/response.js"
 
 dotenv.config();
 
@@ -32,8 +32,12 @@ app.use((err, req, res, next) => {
 
 mongoose
     .connect(process.env.MONGO_URI)
-    .then(() => console.log("DataBase Connected"))
-    .catch((err) => console.error(err));
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+    .then(() => {
+        console.log("DataBase Connected");
+        const PORT = process.env.PORT || 5000;
+        app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+    })
+    .catch((err) => {
+        console.error("Database connection error:", err);
+        process.exit(1);
+    });

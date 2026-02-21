@@ -19,7 +19,7 @@ export const authMiddleware = (req, res, next) => {
 export const authorizeRoles = (...roles) =>{
     return (req, res, next) =>{
         if(!roles.includes(req.user.role)){
-            res.status(403).json({error: "Forbidden: insufficient rights"})
+            return res.status(403).json({error: "Forbidden: insufficient rights"})
         }
         next();
     };

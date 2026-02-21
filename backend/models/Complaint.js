@@ -1,4 +1,4 @@
-import mongoose, { MongooseError } from "mongoose"
+import mongoose from "mongoose"
 
 const complaintSchema = new mongoose.Schema(
     {

@@ -33,12 +33,23 @@ router.post("/login", async (req, res) => {
         if(!isMatch) return sendResponse(res, false, "Invalid Password", null, "Invalid Password", 401);
 
         const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET, { 
-            expiresIn: "1hr",
+            expiresIn: "1h",
         });
 
-        sendResponse(res, true, "Login successful", { token, role: user.role });
+        sendResponse(res, true, "Login successful", { token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
     }catch(error){
         sendResponse(res, false, "Login failed", null, error.message, 500);
+    }
+});
+
+// *Get all officers
+
+router.get("/officers", async (req, res) => {
+    try{
+        const officers = await User.find({role: "officer"}).select("_id name email");
+        sendResponse(res, true, "Officers fetched", { officers });
+    }catch(error){
+        sendResponse(res, false, "Failed to fetch officers", null, error.message, 500);
     }
 });
 
